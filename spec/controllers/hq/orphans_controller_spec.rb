@@ -2,48 +2,23 @@ require 'rails_helper'
 require 'will_paginate/array'
 
 RSpec.describe Hq::OrphansController, type: :controller do
-  let(:orphan) {build_stubbed :orphan}
 
   before :each do
+    @orphan = build_stubbed :orphan
     sign_in instance_double(AdminUser)
   end
 
   specify '#show' do
-    expect(Orphan).to receive(:find).and_return(orphan)
+    expect(Orphan).to receive(:find).and_return(@orphan)
 
-    get :show, id: orphan.id
+    get :show, id: @orphan.id
 
-    expect(assigns(:orphan)).to eq orphan
+    expect(assigns(:orphan)).to eq @orphan
     expect(response).to render_template 'show'
-  end
-
-  context 'new and #create' do
-    let(:orphan) { build_stubbed :orphan }
-
-    before :each do
-      controller.instance_variable_set(:@orphan, orphan)
-    end
-
-    specify 'successful create redirects to the show view' do
-      expect(orphan).to receive(:save).and_return(true)
-
-      post :create, orphan: orphan.attributes
-
-      expect(response).to redirect_to hq_orphan_path(orphan)
-    end
-
-    specify 'unsuccessful create renders the new view' do
-      expect(orphan).to receive(:save).and_return(false)
-
-      post :create, orphan: orphan.attributes
-
-      expect(response).to render_template 'new'
-    end
   end
 
   context '#edit and #update' do
     before :each do
-      @orphan = build_stubbed :orphan
       expect(Orphan).to receive(:find).and_return(@orphan)
     end
 
